@@ -1,4 +1,5 @@
 using CMSAPI.Data;
+using CMSAPI.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using SQLitePCL;
@@ -17,6 +18,9 @@ builder.Services.AddDbContext<CMSAPIDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))); // Register the DbContext with SQLite as the database
 
 builder.Services.AddScoped<CMSAPIDbContext>();
+
+// Register DocumentService and its interface
+builder.Services.AddScoped<IDocumentService, DocumentService>();
 
 builder.Services.AddEndpointsApiExplorer(); // Enable endpoint exploration for minimal APIs
 builder.Services.AddSwaggerGen(); // Add Swagger for API documentation
