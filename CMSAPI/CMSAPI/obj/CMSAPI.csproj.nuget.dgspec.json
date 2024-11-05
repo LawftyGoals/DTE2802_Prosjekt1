@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\xg47\\Documents\\Utdanning\\DTE2802\\DTE2802_Prosjekt1\\CMSAPI\\CMSAPI\\CMSAPI.csproj": {}
+    "C:\\Users\\there\\RiderProjects\\DTE2802_Prosjekt1\\CMSAPI\\CMSAPI\\CMSAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\xg47\\Documents\\Utdanning\\DTE2802\\DTE2802_Prosjekt1\\CMSAPI\\CMSAPI\\CMSAPI.csproj": {
+    "C:\\Users\\there\\RiderProjects\\DTE2802_Prosjekt1\\CMSAPI\\CMSAPI\\CMSAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\xg47\\Documents\\Utdanning\\DTE2802\\DTE2802_Prosjekt1\\CMSAPI\\CMSAPI\\CMSAPI.csproj",
+        "projectUniqueName": "C:\\Users\\there\\RiderProjects\\DTE2802_Prosjekt1\\CMSAPI\\CMSAPI\\CMSAPI.csproj",
         "projectName": "CMSAPI",
-        "projectPath": "C:\\Users\\xg47\\Documents\\Utdanning\\DTE2802\\DTE2802_Prosjekt1\\CMSAPI\\CMSAPI\\CMSAPI.csproj",
-        "packagesPath": "C:\\Users\\xg47\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\xg47\\Documents\\Utdanning\\DTE2802\\DTE2802_Prosjekt1\\CMSAPI\\CMSAPI\\obj\\",
+        "projectPath": "C:\\Users\\there\\RiderProjects\\DTE2802_Prosjekt1\\CMSAPI\\CMSAPI\\CMSAPI.csproj",
+        "packagesPath": "C:\\Users\\there\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\there\\RiderProjects\\DTE2802_Prosjekt1\\CMSAPI\\CMSAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\xg47\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\there\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,7 +22,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -46,6 +45,18 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[6.0.35, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[6.0.35, )"
+            },
+            "Microsoft.Extensions.Identity.Core": {
+              "target": "Package",
+              "version": "[6.0.35, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.5.0, )"
@@ -62,6 +73,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[6.0.33, 6.0.33]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[6.0.33, 6.0.33]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[6.0.33, 6.0.33]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[6.0.33, 6.0.33]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -70,7 +99,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.401\\RuntimeIdentifierGraph.json"
         }
       }
     }
