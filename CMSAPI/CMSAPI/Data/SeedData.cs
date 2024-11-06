@@ -1,64 +1,85 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using CMSAPI.Models;
+using Microsoft.AspNetCore.Identity;
+using CMSAPI.Services.AuthServices;
 
 namespace CMSAPI.Data
 {
     public static class SeedData
     {
-        // Method to initialize the database with sample data
-        public static void Initialize(IServiceProvider serviceProvider)
+        public static async Task Initialize(IServiceProvider serviceProvider)
         {
-            using var context = new CMSAPIDbContext(
-                       serviceProvider.GetRequiredService<DbContextOptions<CMSAPIDbContext>>());
+            var context = serviceProvider.GetRequiredService<CMSAPIDbContext>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var authService = serviceProvider.GetRequiredService<IAuthService>();
 
-            // Check if the Users table already has data
-            if (context.Users.Any())
+            // Apply pending migrations to the database
+            context.Database.Migrate();
+
+            // Check if there are any CMS users in the database
+            if (!context.CMSUsers.Any())
             {
-                return; // Database has already been seeded
+                // Create an Identity user first
+                var identityUser = new IdentityUser
+                {
+                    UserName = "testuser",
+                    Email = "test@example.com",
+                    EmailConfirmed = true
+                };
+
+                // Add the IdentityUser to the database with a password
+                var result = await userManager.CreateAsync(identityUser, "Password123!");
+                if (result.Succeeded)
+                {
+                    // Seed ContentTypes
+                    var contentTypes = new[]
+                    {
+                        new ContentType { Type = "Text" },
+                        new ContentType { Type = "Url" }
+                    };
+                    context.ContentTypes.AddRange(contentTypes);
+
+                    // Create a CMS-specific User linked to the IdentityUser
+                    var cmsUser = new User
+                    {
+                        Username = identityUser.UserName,
+                        Email = identityUser.Email,
+                        IdentityUserId = identityUser.Id // Link CMS user to IdentityUser
+                    };
+
+                    // Create a root folder associated with the IdentityUser
+                    var folder = new Folder
+                    {
+                        Name = "Root",
+                        IdentityUserId = identityUser.Id // Associate folder with IdentityUserId
+                    };
+
+                    // Create a sample document associated with the IdentityUser and folder
+                    var document = new Document
+                    {
+                        Title = "Sample Document",
+                        Content = "This is a sample document.",
+                        ContentType = contentTypes[0].Type,
+                        CreatedDate = DateTime.Now,
+                        IdentityUserId = identityUser.Id, // Associate document with IdentityUserId
+                        Folder = folder
+                    };
+
+                    // Add the CMS-specific User, folder, and document to the database
+                    context.CMSUsers.Add(cmsUser);
+                    context.Folders.Add(folder);
+                    context.Documents.Add(document);
+
+                    // Save changes to the database
+                    await context.SaveChangesAsync();
+
+                    // Generate JWT token for the seeded user
+                    var token = authService.GenerateTokenString(identityUser);
+
+                    // Log the token to the console for easy testing in Swagger
+                    Console.WriteLine($"Token for 'testuser': Bearer {token}");
+                }
             }
-
-            // Seed ContentTypes
-            var contentTypes = new[]
-            {
-                new ContentType { Type = "Text" },
-                new ContentType { Type = "Url" }
-            };
-
-            context.ContentTypes.AddRange(contentTypes);
-
-            // Create a sample user
-            var user = new User
-            {
-                Username = "testuser",
-                Password = "password",
-                Email = "test@example.com"
-            };
-
-            // Create a root folder associated with the sample user
-            var folder = new Folder
-            {
-                Name = "Root",
-                User = user
-            };
-
-            // Create a sample document associated with the user and folder
-            var document = new Document
-            {
-                Title = "Sample Doc",
-                Content = "This is a sample document.",
-                ContentType = contentTypes[0].Type, // Use the "Text" ContentType
-                CreatedDate = DateTime.Now,
-                User = user,
-                Folder = folder
-            };
-
-            // Add the sample user, folder, document, and content types to the context
-            context.Users.Add(user);
-            context.Folders.Add(folder);
-            context.Documents.Add(document);
-
-            // Save the changes to the database
-            context.SaveChanges();
         }
     }
 }

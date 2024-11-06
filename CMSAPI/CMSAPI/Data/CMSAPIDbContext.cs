@@ -1,34 +1,54 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using CMSAPI.Models;
 
 namespace CMSAPI.Data
 {
-    // DbContext class for the CMS API
-    public class CMSAPIDbContext : DbContext
+    // DbContext class for the CMS API, extending IdentityDbContext to support IdentityUser
+    public class CMSAPIDbContext : IdentityDbContext<IdentityUser>
     {
-        // Constructor to pass options to the base DbContext class
         public CMSAPIDbContext(DbContextOptions<CMSAPIDbContext> options) : base(options) { }
 
-        // DbSet properties for each model class to represent database tables
-        public DbSet<User> Users { get; set; } // Table for users
-        public DbSet<Document> Documents { get; set; } // Table for documents
-        public DbSet<Folder> Folders { get; set; } // Table for folders
-        public DbSet<ContentType> ContentTypes { get; set; } // Table for content types
+        // DbSet for the CMS-specific User table, separate from Identity's default users table
+        public DbSet<User> CMSUsers { get; set; }
 
-        // Method to configure the relationships and constraints between models
+        // DbSet for documents, representing the documents table in the database
+        public DbSet<Document> Documents { get; set; }
+
+        // DbSet for folders, representing the folders table in the database
+        public DbSet<Folder> Folders { get; set; }
+
+        // DbSet for content types, representing the content types table in the database
+        public DbSet<ContentType> ContentTypes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configuring one-to-many relationship between Folder and its subfolders
-            modelBuilder.Entity<Folder>()
-                .HasMany(f => f.SubFolders) // A folder can have many subfolders
-                .WithOne(f => f.ParentFolder) // Each subfolder has one parent folder
-                .HasForeignKey(f => f.ParentFolderId); // Foreign key for the parent folder
+            base.OnModelCreating(modelBuilder);
 
-            // Configuring one-to-many relationship between Folder and Document
+            // Folder relationship with IdentityUser
+            modelBuilder.Entity<Folder>()
+                .HasOne(f => f.IdentityUser)
+                .WithMany() // No navigation collection on IdentityUser
+                .HasForeignKey(f => f.IdentityUserId);
+
+            // Document relationship with IdentityUser
             modelBuilder.Entity<Document>()
-                .HasOne(d => d.Folder) // Each document belongs to one folder
-                .WithMany(f => f.Documents) // A folder can have many documents
-                .HasForeignKey(d => d.FolderId); // Foreign key for the folder
+                .HasOne(d => d.IdentityUser)
+                .WithMany() // No navigation collection on IdentityUser
+                .HasForeignKey(d => d.IdentityUserId);
+
+            // Configure other relationships as before
+            modelBuilder.Entity<Folder>()
+                .HasMany(f => f.SubFolders)
+                .WithOne(f => f.ParentFolder)
+                .HasForeignKey(f => f.ParentFolderId);
+
+            modelBuilder.Entity<Document>()
+                .HasOne(d => d.Folder)
+                .WithMany(f => f.Documents)
+                .HasForeignKey(d => d.FolderId);
         }
+
     }
 }

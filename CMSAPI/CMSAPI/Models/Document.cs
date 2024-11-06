@@ -1,4 +1,6 @@
-﻿namespace CMSAPI.Models
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace CMSAPI.Models
 {
     public class Document
     {
@@ -7,8 +9,8 @@
         public string? Content { get; set; } // Content (text or image URL)
         public string? ContentType { get; set; } // Type of content ("Text", "Url")
         public DateTime CreatedDate { get; set; }
-        public int UserId { get; set; } // ID of the user who owns the document
-        public User? User { get; set; } // Navigation property to the user
+        public string IdentityUserId { get; set; } // ID of the IdentityUser who owns the document
+        public IdentityUser? IdentityUser { get; set; } // Navigation property to the IdentityUser
         public int? FolderId { get; set; } // ID of the folder (can be null)
         public Folder? Folder { get; set; } // Navigation property to the folder
     }

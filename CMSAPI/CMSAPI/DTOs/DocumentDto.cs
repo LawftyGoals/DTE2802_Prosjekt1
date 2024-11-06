@@ -7,7 +7,7 @@
         public string? Content { get; set; }
         public string? ContentType { get; set; }
         public DateTime CreatedDate { get; set; }
-        public int UserId { get; set; }
+        public string? IdentityUserId { get; set; } 
         public int? FolderId { get; set; }
     }
 
@@ -16,7 +16,7 @@
         public string? Title { get; set; }
         public string? Content { get; set; }
         public string? ContentType { get; set; }
-        public int UserId { get; set; }
+        public string? IdentityUserId { get; set; } 
         public int? FolderId { get; set; }
     }
 
