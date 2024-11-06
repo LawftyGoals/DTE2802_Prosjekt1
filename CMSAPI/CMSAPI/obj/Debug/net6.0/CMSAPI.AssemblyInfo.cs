@@ -3,8 +3,8 @@
 //     Koden er generert av et verktøy.
 //     Kjøretidsversjon:4.0.30319.42000
 //
-//     Endringer i denne filen kan føre til feil virkemåte, og vil gå tapt hvis
-//     koden genereres på nytt.
+//     Endringer i denne filen kan f�re til feil virkem�te, og vil g� tapt hvis
+//     koden genereres p� nytt.
 // </auto-generated>
 //------------------------------------------------------------------------------
 
