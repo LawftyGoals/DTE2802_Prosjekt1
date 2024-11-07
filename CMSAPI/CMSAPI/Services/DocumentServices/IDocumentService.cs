@@ -1,6 +1,6 @@
 ﻿using CMSAPI.DTOs;
 
-namespace CMSAPI.Services
+namespace CMSAPI.Services.DocumentServices
 {
     public interface IDocumentService
     {

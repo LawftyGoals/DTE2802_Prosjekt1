@@ -1,10 +1,10 @@
 ﻿using CMSAPI.DTOs;
-using CMSAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using CMSAPI.Services.AuthServices;
+using CMSAPI.Services.DocumentServices;
 
 namespace CMSAPI.Controllers
 {

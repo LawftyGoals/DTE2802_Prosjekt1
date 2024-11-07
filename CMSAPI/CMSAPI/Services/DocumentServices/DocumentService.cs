@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace CMSAPI.Services
+namespace CMSAPI.Services.DocumentServices
 {
     public class DocumentService : IDocumentService
     {

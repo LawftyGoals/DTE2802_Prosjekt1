@@ -1,8 +1,8 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using CMSAPI.Data;
-using CMSAPI.Services;
 using CMSAPI.Services.AuthServices;
+using CMSAPI.Services.DocumentServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
