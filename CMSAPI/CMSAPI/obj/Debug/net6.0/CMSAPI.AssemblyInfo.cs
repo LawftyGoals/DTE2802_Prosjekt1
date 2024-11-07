@@ -3,8 +3,8 @@
 //     Koden er generert av et verktøy.
 //     Kjøretidsversjon:4.0.30319.42000
 //
-//     Endringer i denne filen kan f�re til feil virkem�te, og vil g� tapt hvis
-//     koden genereres p� nytt.
+//     Endringer i denne filen kan føre til feil virkemåte, og vil gå tapt hvis
+//     koden genereres på nytt.
 // </auto-generated>
 //------------------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CMSAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aff90534de20eb79f668041469c6e7b5b01e54cd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+16ba6890516df13c1bbf23caf56af67ce7a88c25")]
 [assembly: System.Reflection.AssemblyProductAttribute("CMSAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CMSAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

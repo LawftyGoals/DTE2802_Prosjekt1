@@ -107,5 +107,15 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CMSAPI.Controllers.DocumentController",
+    "Method": "GetTestToken",
+    "RelativePath": "api/Document/generate-test-token",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
   }
 ]
