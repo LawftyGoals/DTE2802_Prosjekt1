@@ -1,4 +1,6 @@
-﻿namespace CMSAPI.Models
+﻿using System.Collections.Generic;
+
+namespace CMSAPI.Models
 {
     public class User
     {
