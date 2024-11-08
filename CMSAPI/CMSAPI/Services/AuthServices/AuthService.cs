@@ -17,38 +17,41 @@ public class AuthService : IAuthService
         _userManager = userManager;
         _config = config;
     }
-    
-    public async Task<bool> RegisterUser(User user)
+
+    // Register a new user with IdentityUser
+    public async Task<bool> RegisterUser(string username, string email, string password)
     {
         var identityUser = new IdentityUser
         {
-            UserName = user.Username,
-            Email = user.Email
+            UserName = username,
+            Email = email
         };
-        
-        var result = await _userManager.CreateAsync(identityUser, user.Password);
+
+        var result = await _userManager.CreateAsync(identityUser, password);
         return result.Succeeded;
     }
 
-    public async Task<bool> Login(User user)
+    // Login by verifying the user's email and password
+    public async Task<bool> Login(string email, string password)
     {
-        var identityUser = await _userManager.FindByEmailAsync(user.Email);
-        if (identityUser is null)
+        var identityUser = await _userManager.FindByEmailAsync(email);
+        if (identityUser == null)
         {
             return false;
         }
 
-        return await _userManager.CheckPasswordAsync(identityUser, user.Password);
+        return await _userManager.CheckPasswordAsync(identityUser, password);
     }
 
+    // Generate a JWT token for the authenticated IdentityUser
     public string GenerateTokenString(IdentityUser user)
     {
         var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.NameIdentifier, user.Id)
-        };
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id) // IdentityUser ID
+            };
 
         var jwtKey = _config.GetSection("Jwt:Key").Value;
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
@@ -62,9 +65,6 @@ public class AuthService : IAuthService
             signingCredentials: signingCredentials
         );
 
-        var tokenString = new JwtSecurityTokenHandler().WriteToken(securityToken);
-        Console.WriteLine("Bearer " + tokenString);
-        return tokenString;
+        return new JwtSecurityTokenHandler().WriteToken(securityToken);
     }
-    
 }

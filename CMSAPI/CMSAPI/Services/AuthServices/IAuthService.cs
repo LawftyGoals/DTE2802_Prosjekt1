@@ -5,9 +5,7 @@ namespace CMSAPI.Services.AuthServices;
 
 public interface IAuthService
 {
-    Task<bool> RegisterUser(User user);
-
-    Task<bool> Login(User user);
-
+    Task<bool> RegisterUser(string username, string email, string password);
+    Task<bool> Login(string email, string password);
     string GenerateTokenString(IdentityUser user);
 }
