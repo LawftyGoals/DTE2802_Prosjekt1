@@ -1,4 +1,6 @@
-﻿using CMSAPI.DTOs;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using CMSAPI.DTOs;
 
 namespace CMSAPI.Services.DocumentServices
 {
