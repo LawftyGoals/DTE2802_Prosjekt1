@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/DTE2802_Prosjekt1/v17/.wsuo
+/.vs/DTE2802_Prosjekt1/v17/DocumentLayout.json
+/.vs/VSWorkspaceState.json
+/CMSAPI/.vs/CMSAPI/v17/.suo
+/CMSAPI/.vs/CMSAPI/v17/.suo
