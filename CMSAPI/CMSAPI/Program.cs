@@ -1,14 +1,15 @@
-using System.Text;
-using System.Text.Json.Serialization;
 using CMSAPI.Data;
 using CMSAPI.Services.AuthServices;
 using CMSAPI.Services.DocumentServices;
+using CMSAPI.Services.FolderServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SQLitePCL;
+using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +18,7 @@ Batteries.Init();
 
 // Configure controllers with JSON options to handle reference loops
 builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
+    .AddJsonOptions(options => {
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
     });
 
@@ -29,25 +29,22 @@ builder.Services.AddDbContext<CMSAPIDbContext>(options =>
 // Register custom services for document and authentication functionalities
 builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<IFolderService, FolderService>();
 
 // Register IHttpContextAccessor for retrieving the current user ID in services
 builder.Services.AddHttpContextAccessor();
 
 // Configure CORS (Cross-Origin Resource Sharing) to allow requests from any origin
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-    {
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAll", policy => {
         policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
 
 // Configure Swagger for API documentation and enable JWT Authentication in Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
+builder.Services.AddSwaggerGen(options => {
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
@@ -77,19 +74,16 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.Sign
     .AddDefaultTokenProviders(); // Enable default token providers for Identity
 
 // Configure JWT authentication settings
-builder.Services.AddAuthentication(options =>
-{
+builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-    .AddJwtBearer(options =>
-    {
+    .AddJwtBearer(options => {
         options.RequireHttpsMetadata = false; // Disable HTTPS requirement for development
         var byteKey = Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:Key").Value);
 
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
+        options.TokenValidationParameters = new TokenValidationParameters {
             ValidateActor = true,
             ValidateIssuer = true,
             ValidateAudience = true,
@@ -104,8 +98,7 @@ builder.Services.AddAuthentication(options =>
 var app = builder.Build();
 
 // Configure Swagger only in development environment
-if (app.Environment.IsDevelopment())
-{
+if (app.Environment.IsDevelopment()) {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
@@ -123,8 +116,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Apply migrations and seed the database with initial data if necessary
-using (var scope = app.Services.CreateScope())
-{
+using (var scope = app.Services.CreateScope()) {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<CMSAPIDbContext>();
     context.Database.Migrate(); // Apply pending migrations

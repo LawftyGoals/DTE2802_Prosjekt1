@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CMSAPI.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class changeFolderSetup : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -208,11 +208,6 @@ namespace CMSAPI.Migrations
                         column: x => x.UserId,
                         principalTable: "CMSUsers",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Folders_Folders_ParentFolderId",
-                        column: x => x.ParentFolderId,
-                        principalTable: "Folders",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -306,11 +301,6 @@ namespace CMSAPI.Migrations
                 name: "IX_Folders_IdentityUserId",
                 table: "Folders",
                 column: "IdentityUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Folders_ParentFolderId",
-                table: "Folders",
-                column: "ParentFolderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Folders_UserId",

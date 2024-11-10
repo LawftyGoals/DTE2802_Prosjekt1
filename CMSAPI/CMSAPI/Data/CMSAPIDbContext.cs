@@ -1,13 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using CMSAPI.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using CMSAPI.Models;
 
-namespace CMSAPI.Data
-{
+namespace CMSAPI.Data {
     // DbContext class for the CMS API, extending IdentityDbContext to support IdentityUser
-    public class CMSAPIDbContext : IdentityDbContext<IdentityUser>
-    {
+    public class CMSAPIDbContext : IdentityDbContext<IdentityUser> {
         public CMSAPIDbContext(DbContextOptions<CMSAPIDbContext> options) : base(options) { }
 
         // DbSet for the CMS-specific User table, separate from Identity's default users table
@@ -22,32 +20,20 @@ namespace CMSAPI.Data
         // DbSet for content types, representing the content types table in the database
         public DbSet<ContentType> ContentTypes { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+        protected override void OnModelCreating(ModelBuilder modelBuilder) {
             base.OnModelCreating(modelBuilder);
 
             // Folder relationship with IdentityUser
             modelBuilder.Entity<Folder>()
-                .HasOne(f => f.IdentityUser)
+                .HasOne<IdentityUser>()
                 .WithMany() // No navigation collection on IdentityUser
-                .HasForeignKey(f => f.IdentityUserId);
+                .HasForeignKey(f => f.IdentityUserId).OnDelete(DeleteBehavior.Cascade);
 
             // Document relationship with IdentityUser
             modelBuilder.Entity<Document>()
                 .HasOne(d => d.IdentityUser)
                 .WithMany() // No navigation collection on IdentityUser
                 .HasForeignKey(d => d.IdentityUserId);
-
-            // Configure other relationships as before
-            modelBuilder.Entity<Folder>()
-                .HasMany(f => f.SubFolders)
-                .WithOne(f => f.ParentFolder)
-                .HasForeignKey(f => f.ParentFolderId);
-
-            modelBuilder.Entity<Document>()
-                .HasOne(d => d.Folder)
-                .WithMany(f => f.Documents)
-                .HasForeignKey(d => d.FolderId);
         }
 
     }
