@@ -119,7 +119,7 @@ public class FolderService : IFolderService {
 
     }
 
-    public async Task Save(string userId, FolderDto folderDto) {
+    public async Task Save(string userId, CreateFolderDto folderDto) {
         var existingFolder = await _context.Folders.FirstOrDefaultAsync(f => f.Id == folderDto.Id && f.IdentityUserId == userId);
         if (existingFolder != null) {
 
@@ -129,9 +129,8 @@ public class FolderService : IFolderService {
 
         var folder = new Folder()
         {
-            Id = folderDto.Id,
             Name = folderDto.Name,
-            ParentFolderId = folderDto.ParentFolder.Id,
+            ParentFolderId = folderDto.ParentFolderId,
             IdentityUserId = userId
         };
 

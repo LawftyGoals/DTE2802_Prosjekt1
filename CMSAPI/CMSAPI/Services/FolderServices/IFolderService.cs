@@ -9,7 +9,7 @@ public interface IFolderService {
 
     Task<FolderDto?> GetFolderByIdAsync(string userId, int id);
 
-    Task Save (string userId, Folder folder);
+    Task Save (string userId, CreateFolderDto folder);
 
     Task Delete (string userId, int id);
 }

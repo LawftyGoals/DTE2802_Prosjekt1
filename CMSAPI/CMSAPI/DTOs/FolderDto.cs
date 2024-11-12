@@ -10,13 +10,10 @@ namespace CMSAPI.DTOs {
     }
 
     public class CreateFolderDto {
+        public int? Id { get; set; }
         public string Name { get; set; } = null!;
         public int ParentFolderId { get; set; }
         public string? IdentityUserId { get; set; }
     }
 
-    public class UpdateFolderDto {
-        public string? Name { get; set; }
-        public int? ParentFolderId { get; set; }
-    }
 }
