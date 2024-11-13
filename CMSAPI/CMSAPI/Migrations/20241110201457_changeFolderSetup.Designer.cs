@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CMSAPI.Migrations
 {
     [DbContext(typeof(CMSAPIDbContext))]
-    [Migration("20241106111106_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241110201457_changeFolderSetup")]
+    partial class changeFolderSetup
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -94,8 +94,6 @@ namespace CMSAPI.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdentityUserId");
-
-                    b.HasIndex("ParentFolderId");
 
                     b.HasIndex("UserId");
 
@@ -320,7 +318,7 @@ namespace CMSAPI.Migrations
             modelBuilder.Entity("CMSAPI.Models.Document", b =>
                 {
                     b.HasOne("CMSAPI.Models.Folder", "Folder")
-                        .WithMany("Documents")
+                        .WithMany()
                         .HasForeignKey("FolderId");
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
@@ -340,23 +338,15 @@ namespace CMSAPI.Migrations
 
             modelBuilder.Entity("CMSAPI.Models.Folder", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("IdentityUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CMSAPI.Models.Folder", "ParentFolder")
-                        .WithMany("SubFolders")
-                        .HasForeignKey("ParentFolderId");
-
                     b.HasOne("CMSAPI.Models.User", null)
                         .WithMany("Folders")
                         .HasForeignKey("UserId");
-
-                    b.Navigation("IdentityUser");
-
-                    b.Navigation("ParentFolder");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -408,13 +398,6 @@ namespace CMSAPI.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("CMSAPI.Models.Folder", b =>
-                {
-                    b.Navigation("Documents");
-
-                    b.Navigation("SubFolders");
                 });
 
             modelBuilder.Entity("CMSAPI.Models.User", b =>

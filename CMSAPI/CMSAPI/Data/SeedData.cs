@@ -1,18 +1,16 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using CMSAPI.Models;
+using CMSAPI.Services.AuthServices;
 using Microsoft.AspNetCore.Identity;
 using CMSAPI.Services.AuthServices;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CMSAPI.Data
-{
-    public static class SeedData
-    {
-        public static async Task Initialize(IServiceProvider serviceProvider)
-        {
+namespace CMSAPI.Data {
+    public static class SeedData {
+        public static async Task Initialize(IServiceProvider serviceProvider) {
             var context = serviceProvider.GetRequiredService<CMSAPIDbContext>();
             var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
             var authService = serviceProvider.GetRequiredService<IAuthService>();
@@ -21,11 +19,9 @@ namespace CMSAPI.Data
             context.Database.Migrate();
 
             // Check if there are any CMS users in the database
-            if (!context.CMSUsers.Any())
-            {
+            if (!context.CMSUsers.Any()) {
                 // Create an Identity user first
-                var identityUser = new IdentityUser
-                {
+                var identityUser = new IdentityUser {
                     UserName = "testuser",
                     Email = "test@example.com",
                     EmailConfirmed = true
@@ -33,8 +29,7 @@ namespace CMSAPI.Data
 
                 // Add the IdentityUser to the database with a password
                 var result = await userManager.CreateAsync(identityUser, "Password123!");
-                if (result.Succeeded)
-                {
+                if (result.Succeeded) {
                     // Seed ContentTypes
                     var contentTypes = new[]
                     {
@@ -44,23 +39,20 @@ namespace CMSAPI.Data
                     context.ContentTypes.AddRange(contentTypes);
 
                     // Create a CMS-specific User linked to the IdentityUser
-                    var cmsUser = new User
-                    {
+                    var cmsUser = new User {
                         Username = identityUser.UserName,
                         Email = identityUser.Email,
                         IdentityUserId = identityUser.Id // Link CMS user to IdentityUser
                     };
 
                     // Create a root folder associated with the IdentityUser
-                    var folder = new Folder
-                    {
+                    var folder = new Folder {
                         Name = "Root",
                         IdentityUserId = identityUser.Id // Associate folder with IdentityUserId
                     };
 
                     // Create a sample document associated with the IdentityUser and folder
-                    var document = new Document
-                    {
+                    var document = new Document {
                         Title = "Sample Document",
                         Content = "This is a sample document.",
                         ContentType = contentTypes[0].Type,

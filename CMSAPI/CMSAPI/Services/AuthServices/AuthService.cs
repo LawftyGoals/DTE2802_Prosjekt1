@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -11,22 +11,18 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace CMSAPI.Services.AuthServices;
 
-public class AuthService : IAuthService
-{
+public class AuthService : IAuthService {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IConfiguration _config;
 
-    public AuthService(UserManager<IdentityUser> userManager, IConfiguration config)
-    {
+    public AuthService(UserManager<IdentityUser> userManager, IConfiguration config) {
         _userManager = userManager;
         _config = config;
     }
 
     // Register a new user with IdentityUser
-    public async Task<bool> RegisterUser(string username, string email, string password)
-    {
-        var identityUser = new IdentityUser
-        {
+    public async Task<bool> RegisterUser(string username, string email, string password) {
+        var identityUser = new IdentityUser {
             UserName = username,
             Email = email
         };
@@ -36,11 +32,9 @@ public class AuthService : IAuthService
     }
 
     // Login by verifying the user's email and password
-    public async Task<bool> Login(string email, string password)
-    {
+    public async Task<bool> Login(string email, string password) {
         var identityUser = await _userManager.FindByEmailAsync(email);
-        if (identityUser == null)
-        {
+        if (identityUser == null) {
             return false;
         }
 
@@ -48,8 +42,7 @@ public class AuthService : IAuthService
     }
 
     // Generate a JWT token for the authenticated IdentityUser
-    public string GenerateTokenString(IdentityUser user)
-    {
+    public string GenerateTokenString(IdentityUser user) {
         var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
