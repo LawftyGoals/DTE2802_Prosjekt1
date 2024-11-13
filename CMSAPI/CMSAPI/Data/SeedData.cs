@@ -1,7 +1,12 @@
-﻿using CMSAPI.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using CMSAPI.Models;
 using CMSAPI.Services.AuthServices;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using CMSAPI.Services.AuthServices;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CMSAPI.Data {
     public static class SeedData {

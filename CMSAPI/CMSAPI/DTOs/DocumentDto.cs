@@ -1,4 +1,6 @@
-﻿namespace CMSAPI.DTOs
+﻿using System;
+
+namespace CMSAPI.DTOs
 {
     public class DocumentDto
     {
