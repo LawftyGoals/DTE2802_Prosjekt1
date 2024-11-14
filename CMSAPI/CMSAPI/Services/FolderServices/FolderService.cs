@@ -4,6 +4,7 @@ using CMSAPI.Models;
 using CMSAPI.Services.DocumentServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace CMSAPI.Services.FolderServices;
 public class FolderService : IFolderService {
@@ -120,7 +121,21 @@ public class FolderService : IFolderService {
     }
 
     public async Task Save(string userId, CreateFolderDto folderDto) {
-        var existingFolder = await _context.Folders.FirstOrDefaultAsync(f => f.Id == folderDto.Id && f.IdentityUserId == userId);
+
+        if (folderDto == null)
+        {
+            throw new InvalidOperationException($"Cannot save or update empty folder object.");
+
+        }
+
+
+        if (folderDto.ParentFolderId == null)
+        {
+            throw new InvalidOperationException($"Cannot save or update folder with no ParentFolderId");
+        }
+
+
+            var existingFolder = await _context.Folders.FirstOrDefaultAsync(f => f.Id == folderDto.Id && f.IdentityUserId == userId);
         if (existingFolder != null) {
 
 
@@ -225,5 +240,20 @@ public class FolderService : IFolderService {
 
     }
 
+    public async Task<Folder?> GetUserRootFolder(string userId)
+    {
+        return await _context.Folders.FirstOrDefaultAsync(rf => rf.IdentityUserId == userId && rf.ParentFolderId == null);
+    }
+
+    public async Task CreateRootFolder(string userId)
+    {
+        var folder = new Folder() {
+            Name = "Root",
+            IdentityUserId = userId,
+            ParentFolderId = null
+        };
+        _context.Folders.Update(folder);
+        await _context.SaveChangesAsync();
+    }
 
 }

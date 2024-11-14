@@ -1,5 +1,4 @@
 ﻿using CMSAPI.DTOs;
-using CMSAPI.Models;
 
 namespace CMSAPI.Services.FolderServices;
 public interface IFolderService {
@@ -12,4 +11,6 @@ public interface IFolderService {
     Task Save (string userId, CreateFolderDto folder);
 
     Task Delete (string userId, int id);
+
+    Task CreateRootFolder(string userId);
 }
