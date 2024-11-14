@@ -122,7 +122,20 @@ public class FolderService : IFolderService {
 
     public async Task Save(string userId, CreateFolderDto folderDto) {
 
-        var existingFolder = await _context.Folders.FirstOrDefaultAsync(f => f.Id == folderDto.Id && f.IdentityUserId == userId);
+        if (folderDto == null)
+        {
+            throw new InvalidOperationException($"Cannot save or update empty folder object.");
+
+        }
+
+
+        if (folderDto.ParentFolderId == null)
+        {
+            throw new InvalidOperationException($"Cannot save or update folder with no ParentFolderId");
+        }
+
+
+            var existingFolder = await _context.Folders.FirstOrDefaultAsync(f => f.Id == folderDto.Id && f.IdentityUserId == userId);
         if (existingFolder != null) {
 
 
