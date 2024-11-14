@@ -225,5 +225,9 @@ public class FolderService : IFolderService {
 
     }
 
+    public async Task<Folder?> GetUserRootFolder(string userId)
+    {
+        return await _context.Folders.FirstOrDefaultAsync(rf => rf.IdentityUserId == userId && rf.ParentFolderId == null);
+    }
 
 }
