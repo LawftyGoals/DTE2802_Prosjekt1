@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CMSAPI.Data;
+﻿using CMSAPI.Data;
 using CMSAPI.DTOs;
 using CMSAPI.Models;
 using CMSAPI.Services.DocumentServices;
@@ -188,26 +184,38 @@ public class FolderService : IFolderService {
 
     }
 
-    private Folder? traverseToTarget(List<Folder> folders, List<String> splitFolders) {
+    private Folder? traverseToTarget(List<Folder> folders, List<string> splitFolders) {
         splitFolders.Reverse();
 
+
+
         var finalTarget = folders.FirstOrDefault(t => t.Name == splitFolders[0]);
+
 
         if (finalTarget == null) {
             return null;
         }
 
+        var previousTarget = finalTarget;
+
         for (var i = 1; i < splitFolders.Count; i++) {
-            var nextFolder = folders.FirstOrDefault(nf => nf.Name == splitFolders[i]);
+            var nextFolder = folders.FirstOrDefault(nf => nf.Name == splitFolders[i] && previousTarget.ParentFolderId == nf.Id);
+
+            if (nextFolder != null)
+                Console.WriteLine(nextFolder.Name);
 
             if (nextFolder == null) {
+                finalTarget = null;
                 return null;
             }
 
             if (nextFolder.ParentFolderId != null) {
+                previousTarget = nextFolder;
                 continue;
             }
         }
+
+        Console.WriteLine(finalTarget);
 
         return finalTarget;
 
