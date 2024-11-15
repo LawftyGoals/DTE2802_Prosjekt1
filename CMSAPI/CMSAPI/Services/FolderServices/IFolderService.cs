@@ -1,16 +1,20 @@
 ﻿using CMSAPI.DTOs;
+using CMSAPI.Models;
 
 namespace CMSAPI.Services.FolderServices;
 public interface IFolderService {
     Task<List<FolderDto>> GetAllFoldersAsync(string userId);
 
-    Task<FolderDto?> GetFolderByNameAsync(string userId, string path);
+    Task<FolderDto?> GetFolderByRouteAsync(string userId, string path);
+    Task<FolderDto?> GetFolderByNameAndParentAsync(string userId, string name, int? ParentId);
 
     Task<FolderDto?> GetFolderByIdAsync(string userId, int id);
 
-    Task Save (string userId, CreateFolderDto folder);
+    Task<Folder> SaveAsync(string userId, Folder folder);
 
-    Task Delete (string userId, int id);
+    Task DeleteAsync(string userId, int id);
 
     Task CreateRootFolder(string userId);
+
+    Task<List<Folder>> GetFolderChildrenAsync(FolderDto? folder);
 }
