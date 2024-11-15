@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CMSAPI.Data;
 using CMSAPI.DTOs;
 using CMSAPI.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace CMSAPI.Services.DocumentServices
 {
@@ -22,7 +20,8 @@ namespace CMSAPI.Services.DocumentServices
 
         public async Task<IEnumerable<DocumentDto>> GetAllDocumentsAsync(string userId)
         {
-            return await _context.Documents
+            // Retrieve all documents for the user
+            var documents = await _context.Documents
                 .Where(d => d.IdentityUserId == userId)
                 .Select(d => new DocumentDto
                 {
@@ -32,14 +31,19 @@ namespace CMSAPI.Services.DocumentServices
                     ContentType = d.ContentType,
                     CreatedDate = d.CreatedDate,
                     IdentityUserId = d.IdentityUserId,
-                    FolderId = d.FolderId
+                    FolderId = d.FolderId,
+                    FolderName = d.Folder != null ? d.Folder.Name : null
                 })
                 .ToListAsync();
+
+            return documents;
         }
 
         public async Task<DocumentDto> GetDocumentByIdAsync(int id, string userId)
         {
+            // Retrieve a specific document by ID for the user
             var document = await _context.Documents
+                .Include(d => d.Folder) // Include folder details
                 .FirstOrDefaultAsync(d => d.Id == id && d.IdentityUserId == userId);
 
             if (document == null)
@@ -53,12 +57,14 @@ namespace CMSAPI.Services.DocumentServices
                 ContentType = document.ContentType,
                 CreatedDate = document.CreatedDate,
                 IdentityUserId = document.IdentityUserId,
-                FolderId = document.FolderId
+                FolderId = document.FolderId,
+                FolderName = document.Folder?.Name
             };
         }
 
         public async Task<DocumentDto> CreateDocumentAsync(CreateDocumentDto createDocumentDto)
         {
+            // Create a new document
             var document = new Document
             {
                 Title = createDocumentDto.Title,
@@ -80,12 +86,14 @@ namespace CMSAPI.Services.DocumentServices
                 ContentType = document.ContentType,
                 CreatedDate = document.CreatedDate,
                 IdentityUserId = document.IdentityUserId,
-                FolderId = document.FolderId
+                FolderId = document.FolderId,
+                FolderName = document.Folder?.Name
             };
         }
 
         public async Task<bool> UpdateDocumentAsync(int id, UpdateDocumentDto updateDocumentDto, string userId)
         {
+            // Update an existing document
             var document = await _context.Documents
                 .FirstOrDefaultAsync(d => d.Id == id && d.IdentityUserId == userId);
 
@@ -103,6 +111,7 @@ namespace CMSAPI.Services.DocumentServices
 
         public async Task<bool> DeleteDocumentAsync(int id, string userId)
         {
+            // Delete a document
             var document = await _context.Documents
                 .FirstOrDefaultAsync(d => d.Id == id && d.IdentityUserId == userId);
 
