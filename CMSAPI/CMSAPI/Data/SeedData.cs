@@ -1,3 +1,4 @@
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -5,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using CMSAPI.Models;
 using CMSAPI.Services.AuthServices;
 using Microsoft.AspNetCore.Identity;
-using CMSAPI.Services.AuthServices;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CMSAPI.Data {

@@ -4,7 +4,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using CMSAPI.Data;
 using CMSAPI.Models;
+using CMSAPI.Services.FolderServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -14,10 +16,12 @@ namespace CMSAPI.Services.AuthServices;
 public class AuthService : IAuthService {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IConfiguration _config;
+    private readonly IFolderService _folderService;
 
-    public AuthService(UserManager<IdentityUser> userManager, IConfiguration config) {
+    public AuthService(UserManager<IdentityUser> userManager, IConfiguration config, IFolderService folderService) {
         _userManager = userManager;
         _config = config;
+        _folderService = folderService;
     }
 
     // Register a new user with IdentityUser
@@ -27,7 +31,14 @@ public class AuthService : IAuthService {
             Email = email
         };
 
+
         var result = await _userManager.CreateAsync(identityUser, password);
+
+        if (result.Succeeded) {
+            var user = await _userManager.FindByEmailAsync(email);
+            await _folderService.CreateRootFolder(user.Id);
+        }
+
         return result.Succeeded;
     }
 

@@ -1,4 +1,6 @@
-﻿using CMSAPI.Models;
+﻿using System;
+using System.Collections.Generic;
+using CMSAPI.Models;
 
 namespace CMSAPI.DTOs {
     public class FolderDto {
