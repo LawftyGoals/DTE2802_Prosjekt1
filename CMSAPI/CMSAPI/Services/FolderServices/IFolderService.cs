@@ -19,4 +19,6 @@ public interface IFolderService {
     Task CreateRootFolder(string userId);
 
     Task<List<Folder>> GetFolderChildrenAsync(FolderDto? folder);
+
+    Task<Folder?> GetUserRootFolder(string userId);
 }

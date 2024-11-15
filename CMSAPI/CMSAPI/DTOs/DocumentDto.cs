@@ -9,9 +9,11 @@ namespace CMSAPI.DTOs
         public string? Content { get; set; }
         public string? ContentType { get; set; }
         public DateTime CreatedDate { get; set; }
-        public string? IdentityUserId { get; set; } 
+        public string? IdentityUserId { get; set; }
         public int? FolderId { get; set; }
+        public string? FolderName { get; set; }
     }
+
 
     public class CreateDocumentDto
     {
@@ -20,6 +22,7 @@ namespace CMSAPI.DTOs
         public string? ContentType { get; set; }
         public string? IdentityUserId { get; set; } 
         public int? FolderId { get; set; }
+        public string? FolderName { get; set; }
     }
 
     public class UpdateDocumentDto
@@ -28,5 +31,6 @@ namespace CMSAPI.DTOs
         public string? Content { get; set; }
         public string? ContentType { get; set; }
         public int? FolderId { get; set; }
+        public string? FolderName { get; set; }
     }
 }
