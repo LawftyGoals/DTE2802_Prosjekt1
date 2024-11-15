@@ -1,4 +1,5 @@
 
+using System;
 using CMSAPI.Data;
 using CMSAPI.Services.AuthServices;
 using CMSAPI.Services.DocumentServices;
@@ -11,6 +12,11 @@ using Microsoft.OpenApi.Models;
 using SQLitePCL;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Initialize SQLite for use in the application
