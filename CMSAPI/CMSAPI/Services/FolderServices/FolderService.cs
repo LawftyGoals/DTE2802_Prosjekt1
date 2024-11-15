@@ -7,8 +7,6 @@ using CMSAPI.DTOs;
 using CMSAPI.Models;
 using CMSAPI.Services.DocumentServices;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace CMSAPI.Services.FolderServices;
 public class FolderService : IFolderService {
@@ -34,10 +32,9 @@ public class FolderService : IFolderService {
                 var foldersDocuments = documents.Where(d => d.FolderId == f.Id).ToList();
 
 
-                String url = getFullUrl(folders, f, parent);
+                string url = getFullUrl(folders, f);
 
-                return new FolderDto()
-                {
+                return new FolderDto() {
                     Id = f.Id,
                     Name = f.Name,
                     ParentFolder = parent,
@@ -58,7 +55,7 @@ public class FolderService : IFolderService {
         }
     }
 
-    public async Task<FolderDto?> GetFolderByNameAsync(string userId, string name) {
+    public async Task<FolderDto?> GetFolderByRouteAsync(string userId, string name) {
         try {
             var folders = await _context.Folders.Where(f => f.IdentityUserId == userId).ToListAsync();
 
@@ -68,22 +65,26 @@ public class FolderService : IFolderService {
 
             if (folder == null) { return null; }
 
-            var documents = await _documentService.GetAllDocumentsAsync(userId);
+            return await createReturnFolderDto(userId, folder, folders);
+        }
+        catch (Exception e) {
+            Console.WriteLine(e);
+            throw;
+        }
 
-            var parent = folder.ParentFolderId != null ? folders.FirstOrDefault(p => p.Id == p.ParentFolderId) : null;
-            var foldersDocuments = documents.Where(d => d.FolderId == d.Id).ToList();
+    }
 
-            var url = getFullUrl(folders, folder, parent);
 
-            var folderDto = new FolderDto() {
-                Id = folder.Id,
-                Name = folder.Name,
-                ParentFolder = parent,
-                Documents = foldersDocuments,
-                Url = url
-            };
 
-            return folderDto;
+    public async Task<FolderDto?> GetFolderByNameAndParentAsync(string userId, string name, int? ParentId) {
+        try {
+            var folders = await _context.Folders.Where(f => f.IdentityUserId == userId).ToListAsync();
+
+            var namedFolder = folders.FirstOrDefault(f => f.Name == name && f.ParentFolderId == ParentId);
+
+            if (namedFolder == null) { return null; }
+
+            return await createReturnFolderDto(userId, namedFolder, folders);
         }
         catch (Exception e) {
             Console.WriteLine(e);
@@ -101,21 +102,7 @@ public class FolderService : IFolderService {
 
             if (folder == null) { return null; }
 
-            var documents = await _documentService.GetAllDocumentsAsync(userId);
-            var parent = folder.ParentFolderId != null ? folders.FirstOrDefault(p => p.Id == p.ParentFolderId) : null;
-
-            var foldersDocuments = documents.Where(d => d.FolderId == d.Id).ToList();
-
-
-
-            var folderDto = new FolderDto() {
-                Id = folder.Id,
-                Name = folder.Name,
-                ParentFolder = parent,
-                Documents = foldersDocuments
-            };
-
-            return folderDto;
+            return await createReturnFolderDto(userId, folder, folders);
         }
         catch (Exception e) {
             Console.WriteLine(e);
@@ -124,118 +111,100 @@ public class FolderService : IFolderService {
 
     }
 
-    public async Task Save(string userId, CreateFolderDto folderDto) {
 
-        if (folderDto == null)
-        {
-            throw new InvalidOperationException($"Cannot save or update empty folder object.");
+    public async Task<Folder> SaveAsync(string userId, Folder folder) {
+        var existingFolder = await _context.Folders.FirstOrDefaultAsync(f => f.Id == folder.Id && f.IdentityUserId == userId);
 
-        }
-
-
-        if (folderDto.ParentFolderId == null)
-        {
-            throw new InvalidOperationException($"Cannot save or update folder with no ParentFolderId");
-        }
-
-
-            var existingFolder = await _context.Folders.FirstOrDefaultAsync(f => f.Id == folderDto.Id && f.IdentityUserId == userId);
         if (existingFolder != null) {
-
-
             _context.Entry(existingFolder).State = EntityState.Detached;
         }
 
-        var folder = new Folder()
-        {
-            Name = folderDto.Name,
-            ParentFolderId = folderDto.ParentFolderId,
-            IdentityUserId = userId
-        };
-
         _context.Folders.Update(folder);
         await _context.SaveChangesAsync();
+
+        return await _context.Folders.FirstAsync(f => f.IdentityUserId == userId && f.Name == folder.Name && f.ParentFolderId == folder.ParentFolderId);
+
     }
 
-    public async Task Delete(string userId, int id) {
+    public async Task DeleteAsync(string userId, int id) {
 
         var folders = await _context.Folders.Where(f => f.IdentityUserId == userId).ToListAsync();
         var folder = folders
-            .FirstOrDefault(f => f.Id == id) ?? throw new InvalidOperationException($"No folder with id {id} found.");
-
-        if (folder.ParentFolderId == null) {
-            throw new InvalidOperationException($"Root folder {folder.Name} can not be deleted.");
-        }
-
-        var subFolderCount = folders.Where(s => s.ParentFolderId == id).ToList().Count;
-        var documentCount = (await _documentService.GetAllDocumentsAsync(userId)).Where(doc => doc.FolderId == id).ToList().Count;
-
-        if (subFolderCount == 0 || documentCount == 0) {
-            throw new InvalidOperationException($"Folder {folder.Name} has contents and can not be deleted");
-        }
+            .FirstOrDefault(f => f.Id == id);
 
         _context.Folders.Remove(folder);
         await _context.SaveChangesAsync();
     }
 
-    private String getFullUrl(List<Folder> folders, Folder folder, Folder? parent) {
+    private async Task<FolderDto> createReturnFolderDto(string userId, Folder folder, List<Folder> folders) {
 
-        String url = parent?.Name ?? "" + "/" + folder.Name;
+        var documents = await _documentService.GetAllDocumentsAsync(userId);
+        var parent = folder.ParentFolderId != null ? folders.FirstOrDefault(p => p.Id == folder.ParentFolderId) : null;
 
-        var targetParent = parent;
+        var foldersDocuments = documents.Where(d => d.FolderId == folder.Id).ToList();
 
-        while (targetParent != null)
-        {
-            parent = folders.FirstOrDefault(tp => tp.Id == targetParent.ParentFolderId);
+        var url = getFullUrl(folders, folder);
 
-            url = targetParent.Name + "/" + url;
+        var folderDto = new FolderDto() {
+            Id = folder.Id,
+            Name = folder.Name,
+            ParentFolder = parent,
+            Documents = foldersDocuments,
+            Url = url
+        };
+
+        return folderDto;
+    }
+
+    private string getFullUrl(List<Folder> folders, Folder folder) {
+        var url = "/" + folder.Name;
+        var ancestors = getAncestors(folders, folder);
+
+        if (ancestors.Count < 1) return url;
+
+        foreach (var ancestor in ancestors) {
+
+            var delimitor = ancestor.Name == "Root" ? "" : "/";
+
+            url = delimitor + ancestor.Name + url;
         }
 
         return url;
     }
 
-    private List<Folder> getAncestors(List<Folder> folders, Folder folder)
-    {
-        var ancestors = new List<Folder>() {};
+    private List<Folder> getAncestors(List<Folder> folders, Folder folder) {
+        var ancestors = new List<Folder>() { };
 
         Folder? parent = folders.FirstOrDefault(p => p.Id == folder.ParentFolderId);
 
-        while (parent != null)
-        {
+        while (parent != null) {
             ancestors.Add(parent);
 
             parent = folders.FirstOrDefault(p => p.Id == parent.ParentFolderId);
 
         }
-        
-        ancestors.Reverse();
 
         return ancestors;
 
     }
 
-    private Folder? traverseToTarget(List<Folder> folders, List<String> splitFolders)
-    {
+    private Folder? traverseToTarget(List<Folder> folders, List<String> splitFolders) {
         splitFolders.Reverse();
-        
+
         var finalTarget = folders.FirstOrDefault(t => t.Name == splitFolders[0]);
 
-        if (finalTarget == null)
-        {
+        if (finalTarget == null) {
             return null;
         }
 
-        for (var i = 1; i < splitFolders.Count; i++)
-        {
+        for (var i = 1; i < splitFolders.Count; i++) {
             var nextFolder = folders.FirstOrDefault(nf => nf.Name == splitFolders[i]);
 
-            if (nextFolder == null)
-            {
+            if (nextFolder == null) {
                 return null;
             }
 
-            if (nextFolder.ParentFolderId != null)
-            {
+            if (nextFolder.ParentFolderId != null) {
                 continue;
             }
         }
@@ -244,13 +213,11 @@ public class FolderService : IFolderService {
 
     }
 
-    public async Task<Folder?> GetUserRootFolder(string userId)
-    {
+    public async Task<Folder?> GetUserRootFolder(string userId) {
         return await _context.Folders.FirstOrDefaultAsync(rf => rf.IdentityUserId == userId && rf.ParentFolderId == null);
     }
 
-    public async Task CreateRootFolder(string userId)
-    {
+    public async Task CreateRootFolder(string userId) {
         var folder = new Folder() {
             Name = "Root",
             IdentityUserId = userId,
@@ -258,6 +225,17 @@ public class FolderService : IFolderService {
         };
         _context.Folders.Update(folder);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<Folder>> GetFolderChildrenAsync(FolderDto? folder) {
+
+        if (folder == null) {
+            return new List<Folder>();
+        }
+
+        var children = await _context.Folders.Where(f => f.ParentFolderId == folder.Id).ToListAsync();
+
+        return children;
     }
 
 }

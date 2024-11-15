@@ -1,23 +1,16 @@
-using System;
-using System.Text;
-using System.Text.Json.Serialization;
+
 using CMSAPI.Data;
 using CMSAPI.Services.AuthServices;
 using CMSAPI.Services.DocumentServices;
 using CMSAPI.Services.FolderServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SQLitePCL;
 using System.Text;
 using System.Text.Json.Serialization;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Initialize SQLite for use in the application
@@ -26,7 +19,7 @@ Batteries.Init();
 // Configure controllers with JSON options to handle reference loops
 builder.Services.AddControllers()
     .AddJsonOptions(options => {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
 // Register the application's DbContext, using SQLite as the database provider
