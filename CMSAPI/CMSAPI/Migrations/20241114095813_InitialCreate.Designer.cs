@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CMSAPI.Migrations
 {
     [DbContext(typeof(CMSAPIDbContext))]
-    [Migration("20241110201457_changeFolderSetup")]
-    partial class changeFolderSetup
+    [Migration("20241114095813_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
