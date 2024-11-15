@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Security.Claims;
 using CMSAPI.DTOs;
 using CMSAPI.Models;
 using CMSAPI.Services.AuthServices;
@@ -8,6 +5,7 @@ using CMSAPI.Services.FolderServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Web;
 namespace CMSAPI.Controllers;
 
@@ -82,7 +80,7 @@ public class FolderController : ControllerBase {
             IdentityUserId = userId
         });
 
-        return CreatedAtAction("Get", new { id = newFolder.Id }, newFolder);
+        return CreatedAtAction(nameof(GetFolderById), new { id = newFolder.Id }, newFolder);
 
     }
 
@@ -110,11 +108,24 @@ public class FolderController : ControllerBase {
         if (existingFolder is null) {
             return NotFound($"No folder with route {name} has been found");
         }
-        Console.WriteLine("Name: " + name);
-        Console.WriteLine("existing Name: " + existingFolder.ParentFolder.Id);
+
         if (name != existingFolder.Url) {
             return BadRequest("Url route does not match url of object in body");
         }
+
+        if (existingFolder.Id == updateFolderDto.ParentFolderId) {
+            return BadRequest("Folder can not be moved to itself");
+        }
+
+
+        var children = await _folderService.GetFolderChildrenAsync(existingFolder);
+        var targetChildParent = children.FirstOrDefault(c => c.Id == updateFolderDto.ParentFolderId);
+
+        if (targetChildParent != null) {
+            return BadRequest("Folder can not be moved to a child.");
+        }
+
+
 
 
         if (existingFolder.ParentFolder.Id != updateFolderDto.ParentFolderId) {
