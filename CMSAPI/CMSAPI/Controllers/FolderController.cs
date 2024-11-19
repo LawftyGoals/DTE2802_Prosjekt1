@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using CMSAPI.DTOs;
 using CMSAPI.Models;
 using CMSAPI.Services.AuthServices;
@@ -9,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using System.Web;
 namespace CMSAPI.Controllers;
 
@@ -167,15 +164,8 @@ public class FolderController : ControllerBase {
         var userId = await GetCurrentUserId();
         var folder = await _folderService.GetFolderByRouteAsync(userId, HttpUtility.UrlDecode(name));
 
-        Console.WriteLine(folder.Name);
-
         if (folder == null) {
             return NotFound($"Folder with {name} not found.");
-        }
-
-        foreach (var document in folder.Documents) {
-            Console.WriteLine(document.Title);
-            Console.WriteLine(folder.Documents.Count);
         }
 
         if (folder.Documents.Count > 0) {

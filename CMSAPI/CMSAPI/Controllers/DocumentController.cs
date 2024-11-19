@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿
 using System.Security.Claims;
-using System.Threading.Tasks;
 using CMSAPI.DTOs;
 using CMSAPI.Services.AuthServices;
 using CMSAPI.Services.DocumentServices;

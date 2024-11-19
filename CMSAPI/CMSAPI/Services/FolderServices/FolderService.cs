@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
 using CMSAPI.Data;
 using CMSAPI.DTOs;
 using CMSAPI.Models;
@@ -218,8 +215,6 @@ public class FolderService : IFolderService {
                 continue;
             }
         }
-
-        Console.WriteLine(finalTarget);
 
         return finalTarget;
 
